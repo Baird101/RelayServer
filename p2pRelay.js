@@ -31,3 +31,36 @@ function setupWebRTC(peerId) {
 
     return connection;
 }
+function connectToPeer(peerId) {
+
+    var connection = setupWebRTC(peerId);
+
+    var channel = connection.createDataChannel("chat");
+
+    channel.onopen = function() {
+        console.log("WebRTC connected to " + peerId);
+    };
+
+    channel.onmessage = function(event) {
+        console.log(
+            "Received from " +
+            peerId +
+            ": " +
+            event.data
+        );
+    };
+
+    connection.createOffer()
+        .then(function(offer) {
+            return connection.setLocalDescription(offer);
+        })
+        .then(function() {
+
+            socket.send(JSON.stringify({
+                type: "webrtc_offer",
+                target: peerId,
+                offer: connection.localDescription
+            }));
+
+        });
+}
