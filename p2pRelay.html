@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8">
+
+<meta name="viewport"
+    content="width=device-width,
+    initial-scale=1.0,
+    maximum-scale=1.0,
+    user-scalable=no">
+
+<title>Relay</title>
+
+<style>
+
+html,
+body {
+
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+
+}
+
+body {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    font-family: sans-serif;
+
+    background: #f5f5f5;
+
+}
+
+#wrap {
+
+    text-align: center;
+
+    width: 100%;
+
+    padding: 20px;
+
+    box-sizing: border-box;
+
+}
+
+#status {
+
+    font-size: 16px;
+
+    margin-bottom: 10px;
+
+}
+
+#lobby {
+
+    font-size: 13px;
+
+    color: #666;
+
+    white-space: pre-line;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="wrap">
+
+    <div id="status">
+        Starting...
+    </div>
+
+    <div id="lobby"></div>
+
+</div>
+
+<script>
+
+var SERVER = "ws://217.154.36.84:7159";
+
+var socket = new WebSocket(SERVER);
+
+socket.onopen = function() {
+
+    document.getElementById("status").textContent = "Connected";
+
+    socket.send(JSON.stringify({
+        type: "join",
+        room: "main",
+        name: "Relay"
+    }));
+
+};
+
+socket.onmessage = function(event) {
+
+    var msg;
+
+    try {
+        msg = JSON.parse(event.data);
+    } catch(e) {
+        return;
+    }
+
+    if(msg.type === "connected") {
+
+        document.getElementById("status").textContent = "Connected";
+
+    }
+
+};
+
+socket.onclose = function() {
+
+    document.getElementById("status").textContent = "Disconnected";
+
+};
+
+socket.onerror = function() {
+
+    document.getElementById("status").textContent = "Connection error";
+
+};
+
+</script>
+
+</body>
+
+</html>
